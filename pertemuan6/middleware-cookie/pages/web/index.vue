@@ -1,5 +1,10 @@
 <template>
   <div class="home" style="height: 100vh">
+    <div class="header">
+      <v-button @click.prevent="logout()">
+        <v-icon>mdi-logout</v-icon>
+      </v-button>
+    </div>
     <div class="title" style="margin-top: 80px; font-size: 35px">
       <center>Dad Jokes</center>
     </div>
@@ -33,7 +38,7 @@
     </div>
     <div v-else>
       <div>
-        <h2>Results: {{ dadjokes.results.length }}</h2>
+        <h2>Results: {{ filteredJokes.length }}</h2>
       </div>
       <div v-for="jokes in filteredJokes" :key="jokes.id">
         <v-container>
@@ -55,10 +60,12 @@
 import axios from "axios";
 
 export default {
+  middleware: "app",
   name: "IndexPage",
   data: () => ({
     sb: null,
-    joke: "",
+    dadjokes: [],
+    tes: "tes",
     itemResult: [
       "Did you hear the one about the guy with the broken hearing aid? Neither did he.",
       "Did you hear the one about the guy with the broken hearing aid? Neither did he.",
@@ -76,13 +83,6 @@ export default {
     },
   },
   methods: {
-    // async asyncData() {
-    //   const api = "https://icanhazdadjoke.com/search";
-    //   const dadjokes = await axios.get(api).then((response) => {
-    //     return response.data;
-    //   });
-    //   return { dadjokes };
-    // },
     getAnswer() {
       this.answer = "Searching for Dad Jokes...";
       try {
@@ -101,8 +101,12 @@ export default {
           },
         })
         .then((response) => {
-          this.dadjokes = response.data;
+          this.dadjokes = response.data.results;
         });
+    },
+    logout() {
+      alert("Logout berhasil");
+      this.$router.push("/login");
     },
   },
   created() {
@@ -110,8 +114,8 @@ export default {
   },
   computed: {
     filteredJokes: function () {
-      return this.joke.filter((jokes) => {
-        return dadjokes.results.match(this.sb);
+      return this.dadjokes.filter((jokes) => {
+        return jokes.joke.match(this.sb);
       });
     },
   },
@@ -120,6 +124,10 @@ export default {
 <style>
 html {
   background-color: #d9d9d9;
+}
+.header {
+  padding-left: 1300px;
+  margin-top: 15px;
 }
 .home {
   font-family: "Poppins", sans-serif;
